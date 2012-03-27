@@ -22,7 +22,13 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 require 'yell'
-require 'yell/adapters/gelf'
+
+begin
+  require 'yell/adapters/gelf'
+rescue LoadError
+  $: << File.dirname(__FILE__)
+  require 'yell/adapters/gelf'
+end
 
 module Yell #:nodoc:
 end
