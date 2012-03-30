@@ -12,13 +12,13 @@ it at http://www.graylog2.org/about/gelf.
 System wide:
 
 ```console
-gem install yell-gelf
+gem install yell-adapters-gelf
 ```
 
 Or in your Gemfile:
 
 ```ruby
-gem "yell-gelf"
+gem "yell-adapters-gelf"
 ```
 
 ## Usage
