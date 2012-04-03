@@ -11,10 +11,10 @@ module Yell #:nodoc:
     # GELF for Graylog2.
     class Gelf < Yell::Adapters::Base
 
-      # Syslog severities
+      # Graylog severities
       Severities = [7, 6, 4, 3, 2, 1]
 
-      # Combines syslog severities with internal representation:
+      # Combines Graylog severities with internal representation:
       #   'DEBUG'   => 7
       #   'INFO'    => 6
       #   'WARN'    => 4
@@ -38,6 +38,7 @@ module Yell #:nodoc:
         def close
           @socket.close unless @socket.closed?
         end
+
 
         private
 
@@ -74,10 +75,10 @@ module Yell #:nodoc:
       # Close the UDP sender
       def close
         @sender.close if @sender.respond_to? :close
-
         @sender = nil
       end
 
+      # graylog specific methods
       def max_chunk_size( val )
         @max_chunk_size = case val
           when :wan then 1420
