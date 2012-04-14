@@ -36,8 +36,8 @@ logger.info "Hello World"
 Or alternatively with the block syntax:
 
 ```ruby
-logger = Yell.new do
-  adapter :gelf
+logger = Yell.new do |l|
+  l.adapter :gelf
 end
 
 logger.info 'Hello World!'
@@ -50,13 +50,12 @@ options to the adapter:
 logger = Yell.new :gelf, :host => 'hostname', :port => 1234
 
 # Or with the block syntax
-logger = Yell.new do
-  adapter :gelf, :host => 'hostname', :port => 1234
+logger = Yell.new do |l|
+  l.adapter :gelf, :host => 'hostname', :port => 1234
 end
 
 logger.info 'Hello World!'
 ```
 
-
-Copyright &copy; 2011-2012 Rudolf Schmidt, released under the MIT license
+Copyright &copy; 2012 Rudolf Schmidt, released under the MIT license
 

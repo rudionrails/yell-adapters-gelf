@@ -11,10 +11,10 @@ module Yell #:nodoc:
     # GELF for Graylog2.
     class Gelf < Yell::Adapters::Base
 
-      # Syslog severities
+      # Graylog severities
       Severities = [7, 6, 4, 3, 2, 1]
 
-      # Combines syslog severities with internal representation:
+      # Combines Graylog severities with internal representation:
       #   'DEBUG'   => 7
       #   'INFO'    => 6
       #   'WARN'    => 4
@@ -48,71 +48,75 @@ module Yell #:nodoc:
           # Cycle host and port
           host = @hosts.shift
           @hosts << host
-
           host
         end
       end
 
-      def initialize( options = {}, &block )
+
+      setup do |options|
         @uid = 0
 
+        self.facility = options.fetch(:facility, 'yell')
+
         # initialize the UDP Sender
-        @host = options.fetch(:host, 'localhost')
-        @port = options.fetch(:port, 12201)
+        self.host = options.fetch(:host, 'localhost')
+        self.port = options.fetch(:port, 12201)
 
-        max_chunk_size options.fetch(:max_chunk_size, :wan)
-
-        super( options, &block )
+        self.max_chunk_size = options.fetch(:max_chunk_size, :wan)
       end
 
+      write do |event|
+        # https://github.com/Graylog2/graylog2-docs/wiki/GELF
+        _datagrams = datagrams(
+          'version'       => '1.0',
 
-      # The sender (UDP Socket)
-      def sender
-        @sender ||= Yell::Adapters::Gelf::Sender.new( [@host, @port] )
+          'facility'      => facility,
+          'level'         => SeverityMap[event.level],
+          'short_message' => event.message,
+          'timestamp'     => event.time.to_f,
+          'host'          => event.hostname,
+
+          'file'          => event.file,
+          'line'          => event.line,
+          '_method'       => event.method,
+          '_pid'          => event.pid
+        )
+
+        sender.send( *_datagrams )
       end
 
-      # Close the UDP sender
-      def close
+      close do
         @sender.close if @sender.respond_to? :close
-
         @sender = nil
       end
 
-      def max_chunk_size( val )
+
+      # Accessor to the Graylog host
+      attr_accessor :host
+
+      # Accessor to the Graylog port
+      attr_accessor :port
+
+      # Accessor to the Graylog facility
+      attr_accessor :facility
+
+      # Accessor to the Graylog chunk size
+      attr_reader :max_chunk_size
+
+      def max_chunk_size=( val )
         @max_chunk_size = case val
           when :wan then 1420
           when :lan then 8154
-          else val
+          else val.to_i
         end
       end
 
 
       private
 
-      def write!( event )
-        # See https://github.com/Graylog2/graylog2-docs/wiki/GELF 
-        # for formatting options.
-        _datagrams = datagrams(
-          'version'       => '1.0', 
-          'facility'      => 'yell', 
-
-          'level'         => SeverityMap[event.level], 
-          'short_message' => event.message, 
-          'timestamp'     => event.time.to_f, 
-          'host'          => Socket.gethostname, 
-
-          'file'          => event.file, 
-          'line'          => event.line, 
-          '_method'       => event.method,
-          '_pid'          => Process.pid
-        )
-
-        sender.send( *_datagrams )
-      rescue Exception => e
-        close
-
-        # re-raise the exception
-        raise( e, caller )
+      # The sender (UDP Socket)
+      def sender
+        @sender ||= Yell::Adapters::Gelf::Sender.new( [@host, @port] )
       end
 
       def datagrams( data )

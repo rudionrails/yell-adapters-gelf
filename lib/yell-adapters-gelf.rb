@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-# Copyright (c) 2011-2012 Rudolf Schmidt
+# Copyright (c) 2012 Rudolf Schmidt
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -21,15 +21,10 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-require 'yell'
-
-begin
-  require 'yell/adapters/gelf'
-rescue LoadError
-  $: << File.dirname(__FILE__)
-  require 'yell/adapters/gelf'
-end
-
 module Yell #:nodoc:
 end
+
+require 'yell'
+
+require File.dirname(__FILE__) + '/yell/adapters/gelf'
 
