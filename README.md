@@ -7,6 +7,11 @@ directly into the Yell wiki at https://github.com/rudionrails/yell/wiki.
 Just in case you wonder: GELF means Graylog Extended Log Format. Read all 
 it at http://www.graylog2.org/about/gelf.
 
+[![Build Status](https://secure.travis-ci.org/rudionrails/yell-adapters-gelf.png?branch=master)](http://travis-ci.org/rudionrails/yell-adapters-gelf)
+
+The Graylog adapter for Yell works and is tested with ruby 1.8.7, 1.9.x, jruby 1.8 and 1.9 mode, rubinius 1.8 and 1.9 as well as ree.
+
+
 ## Installation
 
 System wide:
