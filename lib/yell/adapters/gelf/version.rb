@@ -4,7 +4,7 @@ module Yell #:nodoc:
   module Adapters #:nodoc:
 
     class Gelf
-      VERSION = "0.4.1"
+      VERSION = "0.6.0"
 
     end
 
