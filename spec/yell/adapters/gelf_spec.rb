@@ -2,6 +2,20 @@ require 'spec_helper'
 
 describe Yell::Adapters::Gelf do
 
+  module SenderStub
+    extend self
+
+    def datagrams; @datagrams; end
+
+    def send( *datagrams )
+      @datagrams = datagrams
+    end
+  end
+
+  before do
+    stub( Yell::Adapters::Gelf::Sender ).new( anything ) { SenderStub }
+  end
+
   context "a new Yell::Adapters::Gelf instance" do
     subject { Yell::Adapters::Gelf.new }
 
@@ -53,33 +67,60 @@ describe Yell::Adapters::Gelf do
     let( :event ) { Yell::Event.new( 'INFO', 'Hello World' ) }
     let( :adapter ) { Yell::Adapters::Gelf.new }
 
-    it "should pass datagrams to Sender" do
-      deflated = Zlib::Deflate.deflate( "*" * 1441000 ) # compresses to 1420 bytes
-      mock( Zlib::Deflate ).deflate( anything ) { deflated }
+    context "single" do
+      let( :datagrams ) { SenderStub.datagrams }
 
-      any_instance_of( Yell::Adapters::Gelf::Sender ) { |s| mock(s).send( is_a(String) ) }
+      before do
+        deflated = Zlib::Deflate.deflate( "*" * 1441000 ) # compresses to 1420 bytes
+        mock( Zlib::Deflate ).deflate( anything ) { deflated }
 
-      adapter.write event
-    end
-
-    it "should chunk the message when too long" do
-      deflated = Zlib::Deflate.deflate( "*" * 1442000 ) # compresses to 1421 bytes
-      mock( Zlib::Deflate ).deflate( anything ) { deflated }
-
-      any_instance_of( Yell::Adapters::Gelf::Sender ) do |s| 
-        mock(s).send( is_a(String), is_a(String) )
+        adapter.write event
       end
 
-      adapter.write event
+      it "should be one part" do
+        datagrams.size.should == 1
+      end
+
+      it "should be a string" do
+        datagrams[0].should be_kind_of String
+      end
+
+      it "should be zipped" do
+        datagrams[0][0..1].should == "\x78\x9c" # zlib header
+      end
+    end
+
+    context "chunked" do
+      let( :datagrams ) { SenderStub.datagrams }
+
+      before do
+        deflated = Zlib::Deflate.deflate( "*" * 1442000 ) # compresses to 1421 bytes
+        mock( Zlib::Deflate ).deflate( anything ) { deflated }
+
+        adapter.write event
+      end
+
+      it "should be multiple parts" do
+        datagrams.size.should == 2
+      end
+
+      it "should be multiple strings" do
+        datagrams.each { |datagram| datagram.should be_kind_of String }
+      end
+
+      it "should be multiple GELF chunks" do
+        # datagram assertions mostly taken from original gelf-rb gem
+        datagrams.each_with_index do |datagram, index|
+          datagram[0..1].should == "\x1e\x0f" # GELF header
+
+          # datagram[2..9] is unique the message id
+          datagram[10].ord.should == index # chunk number
+          datagram[11].ord.should == datagrams.size # total chunk number
+        end
+      end
     end
 
     context :datagrams do
-      before do
-        any_instance_of( Yell::Adapters::Gelf::Sender ) do |s|
-          mock( s ).send( anything )
-        end
-      end
-
       after { adapter.write event }
 
       it "should receive :version" do
