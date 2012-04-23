@@ -15,15 +15,6 @@ module Yell #:nodoc:
       # Graylog severities
       Severities = [7, 6, 4, 3, 2, 1]
 
-      # Combines Graylog severities with internal representation:
-      #   'DEBUG'   => 7
-      #   'INFO'    => 6
-      #   'WARN'    => 4
-      #   'ERROR'   => 3
-      #   'FATAL'   => 2
-      #   'UNKNOWN' => 1
-      SeverityMap = Hash[ *(Yell::Severities.zip(Severities).flatten) ]
-
       class Sender
         def initialize( *hosts )
           @hosts  = hosts
@@ -72,7 +63,7 @@ module Yell #:nodoc:
           'version'       => '1.0',
 
           'facility'      => facility,
-          'level'         => SeverityMap[event.level],
+          'level'         => Severities[event.level],
           'short_message' => event.message,
           'timestamp'     => event.time.to_f,
           'host'          => event.hostname,

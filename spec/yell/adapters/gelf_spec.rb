@@ -64,7 +64,7 @@ describe Yell::Adapters::Gelf do
   end
 
   context :write do
-    let( :event ) { Yell::Event.new( 'INFO', 'Hello World' ) }
+    let( :event ) { Yell::Event.new( 1, 'Hello World' ) }
     let( :adapter ) { Yell::Adapters::Gelf.new }
 
     context "single" do
@@ -132,7 +132,7 @@ describe Yell::Adapters::Gelf do
       end
 
       it "should receive :level" do
-        mock.proxy( adapter ).datagrams( hash_including('level' => Yell::Adapters::Gelf::SeverityMap[event.level]) )
+        mock.proxy( adapter ).datagrams( hash_including('level' => Yell::Adapters::Gelf::Severities[event.level]) )
       end
 
       it "should receive :short_message" do
