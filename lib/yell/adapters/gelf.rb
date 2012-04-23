@@ -1,5 +1,11 @@
 # encoding: utf-8
 
+require 'socket'
+require 'zlib'
+require 'digest/md5'
+
+require 'json'
+
 module Yell #:nodoc:
   module Adapters #:nodoc:
 

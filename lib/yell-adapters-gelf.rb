@@ -21,14 +21,6 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-module Yell #:nodoc:
-end
-
-require 'socket'
-require 'zlib'
-require 'digest/md5'
-
-require 'json'
 require 'yell'
 
 require File.dirname(__FILE__) + '/yell/adapters/gelf'
