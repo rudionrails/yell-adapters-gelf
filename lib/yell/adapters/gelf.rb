@@ -46,6 +46,7 @@ module Yell #:nodoc:
 
 
       setup do |options|
+        @sender = nil
         @uid = 0
 
         self.facility = options.fetch(:facility, 'yell')
@@ -108,7 +109,11 @@ module Yell #:nodoc:
 
       # The sender (UDP Socket)
       def sender
-        @sender ||= Yell::Adapters::Gelf::Sender.new( [@host, @port] )
+        @sender or open!
+      end
+
+      def open!
+        @sender = Yell::Adapters::Gelf::Sender.new( [@host, @port] )
       end
 
       def datagrams( data )
