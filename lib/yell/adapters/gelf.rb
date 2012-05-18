@@ -61,18 +61,19 @@ module Yell #:nodoc:
       write do |event|
         # https://github.com/Graylog2/graylog2-docs/wiki/GELF
         _datagrams = datagrams(
-          'version'       => '1.0',
+          {
+            'version'       => '1.0',
 
-          'facility'      => facility,
-          'level'         => Severities[event.level],
-          'short_message' => event.message,
-          'timestamp'     => event.time.to_f,
-          'host'          => event.hostname,
+            'facility'      => facility,
+            'level'         => Severities[event.level],
+            'timestamp'     => event.time.to_f,
+            'host'          => event.hostname,
 
-          'file'          => event.file,
-          'line'          => event.line,
-          '_method'       => event.method,
-          '_pid'          => event.pid
+            'file'          => event.file,
+            'line'          => event.line,
+            '_method'       => event.method,
+            '_pid'          => event.pid
+          }.merge( format(event.message) ).merge( format(event.options) )
         )
 
         sender.send( *_datagrams )
@@ -133,6 +134,18 @@ module Yell #:nodoc:
         end
 
         _datagrams
+      end
+
+      def format( message )
+        case message
+          when Hash
+            message
+          when Exception
+            { "short_message" => "#{message.class}: #{message.message}" }.tap do |m|
+              m.merge!( "long_message" => message.backtrace.join("\n") ) if message.backtrace
+            end
+          else { "short_message" => message.to_s }
+        end
       end
 
       def uid

@@ -162,6 +162,47 @@ describe Yell::Adapters::Gelf do
       it "should receive :pid" do
         mock.proxy( adapter ).datagrams( hash_including('_pid' => event.pid) )
       end
+
+      context "given a Hash" do
+        let( :event ) { Yell::Event.new( 1, 'short_message' => 'Hello World', '_custom_field' => 'Custom Field' ) }
+
+        it "should receive :short_message" do
+          mock.proxy( adapter ).datagrams( hash_including('short_message' => 'Hello World') )
+        end
+
+        it "should receive :_custom_field" do
+          mock.proxy( adapter ).datagrams( hash_including('_custom_field' => 'Custom Field') )
+        end
+      end
+
+      context "given an Exception" do
+        let( :exception ) { StandardError.new 'This is an error' }
+        let( :event ) { Yell::Event.new( 1, exception ) }
+
+        before do
+          mock( exception ).backtrace.times(any_times) { [:back, :trace] }
+        end
+
+        it "should receive :short_message" do
+          mock.proxy( adapter ).datagrams( hash_including('short_message' => "#{exception.class}: #{exception.message}") )
+        end
+
+        it "should receive :long_message" do
+          mock.proxy( adapter ).datagrams( hash_including('long_message' => "back\ntrace") )
+        end
+      end
+
+      context "given a Yell::Event with :options" do
+        let( :event ) { Yell::Event.new( 1, 'Hello World', "_custom_field" => 'Custom Field' ) }
+
+        it "should receive :short_message" do
+          mock.proxy( adapter ).datagrams( hash_including('short_message' => 'Hello World') )
+        end
+
+        it "should receive :_custom_field" do
+          mock.proxy( adapter ).datagrams( hash_including('_custom_field' => 'Custom Field') )
+        end
+      end
     end
   end
 
