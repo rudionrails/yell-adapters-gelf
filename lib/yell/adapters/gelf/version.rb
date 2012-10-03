@@ -3,7 +3,7 @@
 module Yell #:nodoc:
   module Adapters #:nodoc:
     class Gelf
-      VERSION = "0.13.0"
+      VERSION = "1.1.0"
 
     end
   end
