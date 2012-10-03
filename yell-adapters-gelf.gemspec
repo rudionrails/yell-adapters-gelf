@@ -1,7 +1,5 @@
 # -*- encoding: utf-8 -*-
 
-$:.push File.expand_path("../lib", __FILE__)
-
 Gem::Specification.new do |s|
   s.name        = "yell-adapters-gelf"
   s.version     = "1.1.0"
