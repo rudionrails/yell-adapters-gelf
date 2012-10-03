@@ -136,7 +136,7 @@ describe Yell::Adapters::Gelf do
       end
 
       it "should receive :short_message" do
-        mock.proxy( adapter ).datagrams( hash_including('short_message' => event.message) )
+        mock.proxy( adapter ).datagrams( hash_including('short_message' => event.messages.first) )
       end
 
       it "should receive :timestamp" do

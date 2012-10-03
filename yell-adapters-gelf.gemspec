@@ -4,7 +4,7 @@ $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = "yell-adapters-gelf"
-  s.version     = "0.13.4"
+  s.version     = "1.1.0"
   s.authors     = ["Rudolf Schmidt"]
 
   s.homepage    = "http://rubygems.org/gems/yell"
@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
 
   s.require_paths = ["lib"]
 
-  s.add_runtime_dependency "yell", ">= 0.13.4"
+  s.add_runtime_dependency "yell", "~> 1.1"
   s.add_runtime_dependency "json"
 end
 
