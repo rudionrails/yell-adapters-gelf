@@ -12,6 +12,8 @@ describe Yell::Adapters::Gelf do
     end
   end
 
+  let(:logger) { Yell::Logger.new }
+
   before do
     stub( Yell::Adapters::Gelf::Sender ).new( anything ) { SenderStub }
   end
@@ -64,7 +66,7 @@ describe Yell::Adapters::Gelf do
   end
 
   context :write do
-    let( :event ) { Yell::Event.new( 1, 'Hello World' ) }
+    let( :event ) { Yell::Event.new(logger, 1, 'Hello World') }
     let( :adapter ) { Yell::Adapters::Gelf.new }
 
     context "single" do
@@ -164,7 +166,7 @@ describe Yell::Adapters::Gelf do
       end
 
       context "given a Hash" do
-        let( :event ) { Yell::Event.new( 1, 'short_message' => 'Hello World', '_custom_field' => 'Custom Field' ) }
+        let( :event ) { Yell::Event.new(logger, 1, 'short_message' => 'Hello World', '_custom_field' => 'Custom Field') }
 
         it "should receive :short_message" do
           mock.proxy( adapter ).datagrams( hash_including('short_message' => 'Hello World') )
@@ -177,7 +179,7 @@ describe Yell::Adapters::Gelf do
 
       context "given an Exception" do
         let( :exception ) { StandardError.new 'This is an error' }
-        let( :event ) { Yell::Event.new( 1, exception ) }
+        let( :event ) { Yell::Event.new(logger, 1, exception) }
 
         before do
           mock( exception ).backtrace.times(any_times) { [:back, :trace] }
@@ -193,7 +195,7 @@ describe Yell::Adapters::Gelf do
       end
 
       context "given a Yell::Event with :options" do
-        let( :event ) { Yell::Event.new( 1, 'Hello World', "_custom_field" => 'Custom Field' ) }
+        let( :event ) { Yell::Event.new(logger, 1, 'Hello World', "_custom_field" => 'Custom Field') }
 
         it "should receive :short_message" do
           mock.proxy( adapter ).datagrams( hash_including('short_message' => 'Hello World') )

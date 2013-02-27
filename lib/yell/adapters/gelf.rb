@@ -60,17 +60,17 @@ module Yell #:nodoc:
 
       write do |event|
         message = format({
-          'version'       => '1.0',
+          'version'   => '1.0',
 
-          'facility'      => facility,
-          'level'         => Severities[event.level],
-          'timestamp'     => event.time.to_f,
-          'host'          => event.hostname,
+          'facility'  => facility,
+          'level'     => Severities[event.level],
+          'timestamp' => event.time.to_f,
+          'host'      => event.hostname,
 
-          'file'          => event.file,
-          'line'          => event.line,
-          '_method'       => event.method,
-          '_pid'          => event.pid
+          'file'      => event.file,
+          'line'      => event.line,
+          '_method'   => event.method,
+          '_pid'      => event.pid
         }, *event.messages )
 
         # https://github.com/Graylog2/graylog2-docs/wiki/GELF
