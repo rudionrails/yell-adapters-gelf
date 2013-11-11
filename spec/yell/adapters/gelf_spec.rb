@@ -88,7 +88,7 @@ describe Yell::Adapters::Gelf do
       end
 
       it "should be zipped" do
-        datagrams[0][0..1].should == "\x78\x9c" # zlib header
+        datagrams[0][0..1].bytes.should == [0x78, 0x9C] # zlib header
       end
     end
 
