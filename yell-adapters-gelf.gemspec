@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name        = "yell-adapters-gelf"
-  s.version     = "1.2.0"
+  s.version     = "2.0.0"
   s.authors     = ["Rudolf Schmidt"]
 
   s.homepage    = "http://rubygems.org/gems/yell"
