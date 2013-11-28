@@ -15,20 +15,20 @@ describe Yell::Adapters::Gelf do
   let(:logger) { Yell::Logger.new }
 
   before do
-    stub( Yell::Adapters::Gelf::Sender ).new( anything ) { SenderStub }
+    stub(Yell::Adapters::Gelf::Sender).new(anything) { SenderStub }
   end
 
   context "a new Yell::Adapters::Gelf instance" do
     subject { Yell::Adapters::Gelf.new }
 
-    it { subject.host.should == 'localhost' }
-    it { subject.port.should == 12201 }
-    it { subject.facility.should == 'yell' }
-    it { subject.max_chunk_size.should == 1420 }
+    its(:host) { should == 'localhost' }
+    its(:port) { should == 12201 }
+    its(:facility) { should == 'yell' }
+    its(:max_chunk_size) { should == 1420 }
   end
 
   context :host do
-    let( :adapter ) { Yell::Adapters::Gelf.new }
+    let(:adapter) { Yell::Adapters::Gelf.new }
     subject { adapter.host }
 
     before { adapter.host = 'hostname' }
@@ -37,7 +37,7 @@ describe Yell::Adapters::Gelf do
   end
 
   context :port do
-    let( :adapter ) { Yell::Adapters::Gelf.new }
+    let(:adapter) { Yell::Adapters::Gelf.new }
     subject { adapter.port }
 
     before { adapter.port = 1234 }
@@ -46,7 +46,7 @@ describe Yell::Adapters::Gelf do
   end
 
   context :max_chunk_size do
-    let( :adapter ) { Yell::Adapters::Gelf.new }
+    let(:adapter) { Yell::Adapters::Gelf.new }
     subject { adapter.max_chunk_size }
 
     context :wan do
@@ -66,15 +66,15 @@ describe Yell::Adapters::Gelf do
   end
 
   context :write do
-    let( :event ) { Yell::Event.new(logger, 1, 'Hello World') }
-    let( :adapter ) { Yell::Adapters::Gelf.new }
+    let(:event) { Yell::Event.new(logger, 1, 'Hello World') }
+    let(:adapter) { Yell::Adapters::Gelf.new }
 
     context "single" do
-      let( :datagrams ) { SenderStub.datagrams }
+      let(:datagrams) { SenderStub.datagrams }
 
       before do
-        deflated = Zlib::Deflate.deflate( "*" * 1441000 ) # compresses to 1420 bytes
-        mock( Zlib::Deflate ).deflate( anything ) { deflated }
+        deflated = Zlib::Deflate.deflate("*" * 1441000) # compresses to 1420 bytes
+        mock(Zlib::Deflate).deflate(anything) { deflated }
 
         adapter.write event
       end
@@ -93,11 +93,11 @@ describe Yell::Adapters::Gelf do
     end
 
     context "chunked" do
-      let( :datagrams ) { SenderStub.datagrams }
+      let(:datagrams) { SenderStub.datagrams }
 
       before do
-        deflated = Zlib::Deflate.deflate( "*" * 1442000 ) # compresses to 1421 bytes
-        mock( Zlib::Deflate ).deflate( anything ) { deflated }
+        deflated = Zlib::Deflate.deflate("*" * 1442000) # compresses to 1421 bytes
+        mock(Zlib::Deflate).deflate(anything) { deflated }
 
         adapter.write event
       end
@@ -107,7 +107,7 @@ describe Yell::Adapters::Gelf do
       end
 
       it "should be multiple strings" do
-        datagrams.each { |datagram| datagram.should be_kind_of String }
+        datagrams.each { |datagram| datagram.should be_kind_of(String) }
       end
 
       it "should be multiple GELF chunks" do
@@ -126,83 +126,83 @@ describe Yell::Adapters::Gelf do
       after { adapter.write event }
 
       it "should receive :version" do
-        mock.proxy( adapter ).datagrams( hash_including('version' => '1.0') )
+        mock.proxy(adapter).datagrams( hash_including('version' => '1.0') )
       end
 
       it "should receive :facility" do
-        mock.proxy( adapter ).datagrams( hash_including('facility' => adapter.facility) )
+        mock.proxy(adapter).datagrams( hash_including('facility' => adapter.facility) )
       end
 
       it "should receive :level" do
-        mock.proxy( adapter ).datagrams( hash_including('level' => Yell::Adapters::Gelf::Severities[event.level]) )
+        mock.proxy(adapter).datagrams( hash_including('level' => Yell::Adapters::Gelf::Severities[event.level]) )
       end
 
       it "should receive :short_message" do
-        mock.proxy( adapter ).datagrams( hash_including('short_message' => event.messages.first) )
+        mock.proxy(adapter).datagrams( hash_including('short_message' => event.messages.first) )
       end
 
       it "should receive :timestamp" do
-        mock.proxy( adapter ).datagrams( hash_including('timestamp' => event.time.to_f) )
+        mock.proxy(adapter).datagrams( hash_including('timestamp' => event.time.to_f) )
       end
 
       it "should receive :host" do
-        mock.proxy( adapter ).datagrams( hash_including('host' => event.hostname) )
+        mock.proxy(adapter).datagrams( hash_including('host' => event.hostname) )
       end
 
       it "should receive :file" do
-        mock.proxy( adapter ).datagrams( hash_including('file' => event.file) )
+        mock.proxy(adapter).datagrams( hash_including('file' => event.file) )
       end
 
       it "should receive :line" do
-        mock.proxy( adapter ).datagrams( hash_including('line' => event.line) )
+        mock.proxy(adapter).datagrams( hash_including('line' => event.line) )
       end
 
       it "should receive :method" do
-        mock.proxy( adapter ).datagrams( hash_including('_method' => event.method) )
+        mock.proxy(adapter).datagrams( hash_including('_method' => event.method) )
       end
 
       it "should receive :pid" do
-        mock.proxy( adapter ).datagrams( hash_including('_pid' => event.pid) )
+        mock.proxy(adapter).datagrams( hash_including('_pid' => event.pid) )
       end
 
       context "given a Hash" do
-        let( :event ) { Yell::Event.new(logger, 1, 'short_message' => 'Hello World', '_custom_field' => 'Custom Field') }
+        let(:event) { Yell::Event.new(logger, 1, 'short_message' => 'Hello World', '_custom_field' => 'Custom Field') }
 
         it "should receive :short_message" do
-          mock.proxy( adapter ).datagrams( hash_including('short_message' => 'Hello World') )
+          mock.proxy(adapter).datagrams( hash_including('short_message' => 'Hello World') )
         end
 
         it "should receive :_custom_field" do
-          mock.proxy( adapter ).datagrams( hash_including('_custom_field' => 'Custom Field') )
+          mock.proxy(adapter).datagrams( hash_including('_custom_field' => 'Custom Field') )
         end
       end
 
       context "given an Exception" do
-        let( :exception ) { StandardError.new 'This is an error' }
-        let( :event ) { Yell::Event.new(logger, 1, exception) }
+        let(:exception) { StandardError.new('This is an error') }
+        let(:event) { Yell::Event.new(logger, 1, exception) }
 
         before do
-          mock( exception ).backtrace.times(any_times) { [:back, :trace] }
+          mock(exception).backtrace.times(any_times) { [:back, :trace] }
         end
 
         it "should receive :short_message" do
-          mock.proxy( adapter ).datagrams( hash_including('short_message' => "#{exception.class}: #{exception.message}") )
+          mock.proxy(adapter).datagrams( hash_including('short_message' => "#{exception.class}: #{exception.message}") )
         end
 
         it "should receive :long_message" do
-          mock.proxy( adapter ).datagrams( hash_including('long_message' => "back\ntrace") )
+          mock.proxy(adapter).datagrams( hash_including('long_message' => "back\ntrace") )
         end
       end
 
       context "given a Yell::Event with :options" do
-        let( :event ) { Yell::Event.new(logger, 1, 'Hello World', "_custom_field" => 'Custom Field') }
+        let(:event) { Yell::Event.new(logger, 1, 'Hello World', "_custom_field" => 'Custom Field') }
 
         it "should receive :short_message" do
-          mock.proxy( adapter ).datagrams( hash_including('short_message' => 'Hello World') )
+          mock.proxy(adapter).datagrams( hash_including('short_message' => 'Hello World') )
         end
 
         it "should receive :_custom_field" do
-          mock.proxy( adapter ).datagrams( hash_including('_custom_field' => 'Custom Field') )
+          mock.proxy(adapter).datagrams( hash_including('_custom_field' => 'Custom Field') )
         end
       end
     end

@@ -23,7 +23,7 @@ module Yell #:nodoc:
 
         def send( *datagrams )
           datagrams.each do |d|
-            @socket.send( d, 0, *host_and_port )
+            @socket.send(d, 0, *host_and_port)
           end
         end
 
