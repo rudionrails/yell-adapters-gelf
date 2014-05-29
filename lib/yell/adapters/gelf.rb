@@ -49,6 +49,9 @@ module Yell #:nodoc:
         @sender = nil
         @uid = 0
 
+        # Symbolize keys
+        options = Hash[options.map{ |k, v| [k.to_sym, v] }]
+
         self.facility = options.fetch(:facility, 'yell')
 
         # initialize the UDP Sender
