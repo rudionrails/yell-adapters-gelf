@@ -3,7 +3,8 @@ $:.unshift File.expand_path('../../lib', __FILE__)
 
 require 'yell-adapters-gelf'
 
-require 'rspec'
+require 'rspec/core'
+require 'rspec/expectations'
 require 'rr'
 
 RSpec.configure do |config|

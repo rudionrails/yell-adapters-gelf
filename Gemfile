@@ -6,7 +6,8 @@ gemspec
 group :development, :test do
   gem "rake"
 
-  gem "rspec"
+  gem "rspec-core", '~> 2'
+  gem 'rspec-expectations', '~> 2'
   gem "rr"
 end
 
