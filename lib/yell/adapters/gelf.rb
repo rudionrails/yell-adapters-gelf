@@ -49,13 +49,13 @@ module Yell #:nodoc:
         @sender = nil
         @uid = 0
 
-        self.facility = options.fetch(:facility, 'yell')
+        self.facility = Yell.__fetch__(options, :facility, :default => 'yell')
 
         # initialize the UDP Sender
-        self.host = options.fetch(:host, 'localhost')
-        self.port = options.fetch(:port, 12201)
+        self.host = Yell.__fetch__(options, :host, :default => 'localhost')
+        self.port = Yell.__fetch__(options, :port, :default => 12201)
 
-        self.max_chunk_size = options.fetch(:max_chunk_size, :wan)
+        self.max_chunk_size = Yell.__fetch__(options, :max_chunk_size, :default => :wan)
       end
 
       write do |event|
@@ -151,17 +151,17 @@ module Yell #:nodoc:
           when Hash
             message
           when Exception
-            { "short_message" => "#{message.class}: #{message.message}" }.tap do |m|
-              m.merge!( "long_message" => message.backtrace.join("\n") ) if message.backtrace
+            {"short_message" => "#{message.class}: #{message.message}"}.tap do |m|
+              m.merge!("long_message" => message.backtrace.join("\n")) if message.backtrace
             end
-          else { "short_message" => message.to_s }
+          else {"short_message" => message.to_s}
         end
       end
 
     end
 
-    register( :gelf, Yell::Adapters::Gelf )
-    register( :graylog2, Yell::Adapters::Gelf )
+    register(:gelf, Yell::Adapters::Gelf)
+    register(:graylog2, Yell::Adapters::Gelf)
 
   end
 end

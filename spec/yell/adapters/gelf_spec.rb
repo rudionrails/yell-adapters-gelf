@@ -27,22 +27,55 @@ describe Yell::Adapters::Gelf do
     its(:max_chunk_size) { should == 1420 }
   end
 
+  context :facility do
+    subject { adapter.facility }
+
+    context "from initialize options" do
+      let(:adapter) { Yell::Adapters::Gelf.new('facility' => 'facility') }
+
+      it { should == 'facility' }
+    end
+
+    context "from accessor" do
+      let(:adapter) { Yell::Adapters::Gelf.new }
+      before { adapter.facility = 'facility' }
+
+      it { should == 'facility' }
+    end
+  end
+
   context :host do
-    let(:adapter) { Yell::Adapters::Gelf.new }
     subject { adapter.host }
 
-    before { adapter.host = 'hostname' }
+    context "from initialize options" do
+      let(:adapter) { Yell::Adapters::Gelf.new('host' => 'hostname') }
 
-    it { should == 'hostname' }
+      it { should == 'hostname' }
+    end
+
+    context "from accessor" do
+      let(:adapter) { Yell::Adapters::Gelf.new }
+      before { adapter.host = 'hostname' }
+
+      it { should == 'hostname' }
+    end
   end
 
   context :port do
-    let(:adapter) { Yell::Adapters::Gelf.new }
     subject { adapter.port }
 
-    before { adapter.port = 1234 }
+    context "from initialize options" do
+      let(:adapter) { Yell::Adapters::Gelf.new('port' => 1234) }
 
-    it { should == 1234 }
+      it { should == 1234 }
+    end
+
+    context "from accessor" do
+      let(:adapter) { Yell::Adapters::Gelf.new }
+      before { adapter.port = 1234 }
+
+      it { should == 1234 }
+    end
   end
 
   context :max_chunk_size do
@@ -59,7 +92,7 @@ describe Yell::Adapters::Gelf do
       it { should == 8154 }
     end
 
-    context :other do
+    context 'other'do
       before { adapter.max_chunk_size = "1234" }
       it { should == 1234 }
     end
