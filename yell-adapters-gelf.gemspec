@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name        = "yell-adapters-gelf"
-  s.version     = "2.0.0"
+  s.version     = "2.0.1"
   s.authors     = ["Rudolf Schmidt"]
 
   s.homepage    = "http://rubygems.org/gems/yell"
@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
 
   s.require_paths = ["lib"]
 
-  s.add_runtime_dependency "yell", "~> 2.0"
+  s.add_runtime_dependency "yell", ">= 2.0.4", "< 3"
   s.add_runtime_dependency "json"
 end
 
