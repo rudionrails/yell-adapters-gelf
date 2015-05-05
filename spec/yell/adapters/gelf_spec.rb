@@ -61,6 +61,23 @@ describe Yell::Adapters::Gelf do
     end
   end
 
+  context :source do
+    subject { adapter.source }
+
+    context "from initialize options" do
+      let(:adapter) { Yell::Adapters::Gelf.new('source' => 'source') }
+
+      it { should == 'source' }
+    end
+
+    context "from accessor" do
+      let(:adapter) { Yell::Adapters::Gelf.new }
+      before { adapter.source = 'source' }
+
+      it { should == 'source' }
+    end
+  end
+
   context :port do
     subject { adapter.port }
 

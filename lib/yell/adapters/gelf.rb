@@ -54,6 +54,7 @@ module Yell #:nodoc:
         # initialize the UDP Sender
         self.host = Yell.__fetch__(options, :host, :default => 'localhost')
         self.port = Yell.__fetch__(options, :port, :default => 12201)
+        self.source = Yell.__fetch__(options, :source)
 
         self.max_chunk_size = Yell.__fetch__(options, :max_chunk_size, :default => :wan)
       end
@@ -65,7 +66,7 @@ module Yell #:nodoc:
           'facility'  => facility,
           'level'     => Severities[event.level],
           'timestamp' => event.time.to_f,
-          'host'      => event.hostname,
+          'host'      => source || event.hostname,
 
           'file'      => event.file,
           'line'      => event.line,
@@ -90,6 +91,9 @@ module Yell #:nodoc:
 
       # Accessor to the Graylog port
       attr_accessor :port
+
+      # Accessor to the Graylog source
+      attr_accessor :source
 
       # Accessor to the Graylog facility
       attr_accessor :facility
